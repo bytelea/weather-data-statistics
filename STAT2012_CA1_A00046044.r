@@ -27,3 +27,23 @@ weather <- weather %>%
     month_num = as.integer(format(date, "%m")), 
     month_name = factor(month.abb[month_num], levels = month.abb)
   )
+
+# monthly rainfall totals
+monthly_rain <- weather %>%
+  group_by(year, month_num, month_name) %>% # used for the rainfall graphs
+  summarise(monthly_rain = sum(rain, na.rm = TRUE), .groups = "drop") %>%
+  mutate(month_date = as.Date(paste(year, month_num, "01", sep = "-")))
+
+# plot 1: monthly rainfall over time
+p1 <- ggplot(monthly_rain, aes(x = month_date, y = monthly_rain)) +
+  geom_line(color = "#0B5A7A") +
+  labs(
+    title = "Monthly Rainfall Over Time at Athenry",
+    x = "Date",
+    y = "Monthly Rainfall (mm)"
+  ) +
+  theme_minimal()
+
+# outputs the plot 1
+print(p1) 
+ggsave("monthly_rainfall_time_plot.png", plot = p1, width = 8, height = 5)
