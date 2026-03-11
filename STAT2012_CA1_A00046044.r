@@ -98,3 +98,22 @@ q3 <- quantile(temp_year$mean_temp, 0.75, na.rm = TRUE)
 print(q1)
 print(q2)
 print(q3)
+
+# plot 3: daily temperature vs long term average with quartiles
+p3 <- ggplot(temp_year, aes(x = date)) +
+  geom_line(aes(y = mean_temp, colour = "Daily Mean Temperature"), size = 0.8) +
+  geom_line(aes(y = lta_mean_temp, colour = "31-day Long-Term Average"), size = 1)
+  geom_hline(yintercept = q1, linetype = "dashed", colour = "#AED3E6") +
+  geom_hline(yintercept = q2, linetype = "dashed", colour = "#0B5A7A") +
+  geom_hline(yintercept = q3, linetype = "dashed", colour = "#1F6787") +
+  labs(
+    title = paste("Daily Mean Temperature vs Long-Term Average in", chosen_year),
+    x = "Date",
+    y = "Temperature (°C)",
+    colour = "Legend"
+  ) +
+  theme_minimal()
+
+# outputs the plot 3
+print(p3)
+ggsave("temperature_lta_quartiles_plot.png", plot = p3, width = 9, height = 5)
