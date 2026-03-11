@@ -47,3 +47,54 @@ p1 <- ggplot(monthly_rain, aes(x = month_date, y = monthly_rain)) +
 # outputs the plot 1
 print(p1) 
 ggsave("monthly_rainfall_time_plot.png", plot = p1, width = 8, height = 5)
+
+# plot 2: histogram of monthly rainfall
+p2 <- ggplot(monthly_rain, aes(x = monthly_rain)) +
+  geom_histogram(bins = 20, fill = "#AED3E6", color = "#0B5A7A") +
+  labs(
+    title = "Histogram of Monthly Rainfall at Athenry",
+    x = "Monthly Rainfall (mm)",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+# outputs the plot 2
+print(p2)
+ggsave("monthly_rainfall_histogram.png", plot = p2, width = 8, height = 5)
+
+# getting the wettest month
+wettest_month_totals <- monthly_rain %>%
+  group_by(month_name) %>%
+  summarise(avg_monthly_rain = mean(monthly_rain, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(avg_monthly_rain))
+
+print(wettest_month_totals)
+
+# probability of a rainy day
+prob_rainy_day <- mean(weather$rain > 0, na.rm = TRUE) 
+prob_rainy_day_percent <- prob_rainy_day * 100 # the percentage
+
+print(prob_rainy_day)
+print(prob_rainy_day_percent)
+
+# month moving average
+weather <- weather %>%
+  arrange(date) %>%
+  mutate(
+    lta_mean_temp = as.numeric(ma(mean_temp, order = 31, centre = FALSE))
+  )
+
+# year for daily temperature plot
+chosen_year <- 2020
+
+temp_year <- weather %>%
+  filter(year == chosen_year)
+
+# quartiles
+q1 <- quantile(temp_year$mean_temp, 0.25, na.rm = TRUE)
+q2 <- quantile(temp_year$mean_temp, 0.50, na.rm = TRUE)
+q3 <- quantile(temp_year$mean_temp, 0.75, na.rm = TRUE)
+
+print(q1)
+print(q2)
+print(q3)
