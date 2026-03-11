@@ -117,3 +117,38 @@ p3 <- ggplot(temp_year, aes(x = date)) +
 # outputs the plot 3
 print(p3)
 ggsave("temperature_lta_quartiles_plot.png", plot = p3, width = 9, height = 5)
+
+# average monthly rainfall by calendar month
+avg_month_rain <- monthly_rain %>%
+  group_by(month_name) %>%
+  summarise(
+    avg_rain = mean(monthly_rain, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# plot 4: average monthly rainfall by calendar month bar chart
+p4 <- ggplot(avg_month_rain, aes(x = month_name, y = avg_rain)) +
+  geom_col(fill = "#AED3E6", color = "#0B5A7A") +
+  labs(
+    title = "Average Monthly Rainfall at Athenry",
+    x = "Month",
+    y = "Average Rainfall (mm)"
+  ) +
+  theme_minimal()
+
+# outputs the plot 4
+print(p4)
+ggsave("avg_monthly_rainfall_barplot.png", plot = p4, width = 8, height = 5)
+
+# plot 5: boxplot of daily mean temperature by month
+p5 <- ggplot(weather, aes(x = month_name, y = mean_temp)) +
+  geom_boxplot(fill = "#AED3E6", alpha = 0.7, color = "#0B5A7A") +
+  labs(
+    title = "Distribution of Daily Mean Temperature by Month",
+    x = "Month",
+    y = "Mean Temperature (°C)"
+  ) +
+  theme_minimal()
+
+print(p5)
+ggsave("temperature_boxplot_by_month.png", plot = p5, width = 8, height = 5)
