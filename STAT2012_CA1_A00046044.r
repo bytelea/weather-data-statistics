@@ -3,6 +3,8 @@ if (!requireNamespace("tidyverse", quietly = TRUE)) install.packages("tidyverse"
 if (!requireNamespace("forecast",  quietly = TRUE)) install.packages("forecast")
 
 # loads the libraries/packages for the assignment
+# tidyverse for importing, cleaning, transforming and plotting the weather data
+# forecast for calculating the moving average
 library(tidyverse)
 library(forecast)
 
@@ -14,12 +16,12 @@ weather <- read_csv(
   show_col_types = FALSE
 )
 
-# keeps only needed columns and cleans the data
+# keep only needed columns and clean data
 weather <- weather %>%
   select(date, maxtp, mintp, rain) %>%
   mutate(
     date = as.Date(date, format = "%d-%b-%Y"),
-    maxtp = as.numeric(maxtp), 
+    maxtp = as.numeric(maxtp),
     mintp = as.numeric(mintp),
     rain = as.numeric(rain),
     mean_temp = (maxtp + mintp) / 2, # calculates the average daily temperature
@@ -28,13 +30,13 @@ weather <- weather %>%
     month_name = factor(month.abb[month_num], levels = month.abb)
   )
 
-# monthly rainfall totals
+# Monthly rainfall totals
 monthly_rain <- weather %>%
   group_by(year, month_num, month_name) %>% # used for the rainfall graphs
   summarise(monthly_rain = sum(rain, na.rm = TRUE), .groups = "drop") %>%
   mutate(month_date = as.Date(paste(year, month_num, "01", sep = "-")))
 
-# plot 1: monthly rainfall over time
+# Plot 1: Monthly rainfall over time
 p1 <- ggplot(monthly_rain, aes(x = month_date, y = monthly_rain)) +
   geom_line(color = "#0B5A7A") +
   labs(
@@ -44,8 +46,7 @@ p1 <- ggplot(monthly_rain, aes(x = month_date, y = monthly_rain)) +
   ) +
   theme_minimal()
 
-# outputs the plot 1
-print(p1) 
+print(p1)
 ggsave("monthly_rainfall_time_plot.png", plot = p1, width = 8, height = 5)
 
 # plot 2: histogram of monthly rainfall
@@ -99,10 +100,10 @@ print(q1)
 print(q2)
 print(q3)
 
-# plot 3: daily temperature vs long term average with quartiles
+# plot 3: daily temperature vs long-term average with quartiles
 p3 <- ggplot(temp_year, aes(x = date)) +
   geom_line(aes(y = mean_temp, colour = "Daily Mean Temperature"), size = 0.8) +
-  geom_line(aes(y = lta_mean_temp, colour = "31-day Long-Term Average"), size = 1)
+  geom_line(aes(y = lta_mean_temp, colour = "31-day Long-Term Average"), size = 1) +
   geom_hline(yintercept = q1, linetype = "dashed", colour = "#AED3E6") +
   geom_hline(yintercept = q2, linetype = "dashed", colour = "#0B5A7A") +
   geom_hline(yintercept = q3, linetype = "dashed", colour = "#1F6787") +
